@@ -30,12 +30,14 @@ public class TbLwM2MReadCallback extends TbLwM2MUplinkTargetedCallback<ReadReque
 
     public TbLwM2MReadCallback(LwM2mUplinkMsgHandler handler, LwM2MTelemetryLogService logService, LwM2mClient client, String targetId) {
         super(handler, logService, client, targetId);
+        log.info("TB in downlink/TbLwM2MReadCallback");
     }
 
     @Override
     public void onSuccess(ReadRequest request, ReadResponse response) {
         logForBadResponse(response.getCode().getCode(), responseToString(response), request.getClass().getSimpleName());
         handler.onUpdateValueAfterReadResponse(client.getRegistration(), versionedId, response);
+        log.info("TB in downlink/TbLwM2MReadCallback/onSuccess");
     }
 
     private String responseToString(ReadResponse response) {
@@ -51,6 +53,8 @@ public class TbLwM2MReadCallback extends TbLwM2MUplinkTargetedCallback<ReadReque
                 }
             }
         }
+        log.info("TB in downlink/TbLwM2MReadCallback/onSuccess");
+        log.info(response.toString());
         return response.toString();
     }
 

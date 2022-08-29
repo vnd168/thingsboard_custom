@@ -217,6 +217,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
             LwM2mClient lwM2MClient = this.clientContext.getClientByEndpoint(registration.getEndpoint());
             try {
                 log.debug("[{}] [{{}] Client: create after Registration", registration.getEndpoint(), registration.getId());
+                log.info("TB in DefaultLwM2MUplinkMesHandler/onRegistered");
                 Optional<SessionInfoProto> oldSessionInfo = this.clientContext.register(lwM2MClient, registration);
                 if (oldSessionInfo.isPresent()) {
                     log.info("[{}] Closing old session: {}", registration.getEndpoint(), new UUID(oldSessionInfo.get().getSessionIdMSB(), oldSessionInfo.get().getSessionIdLSB()));
@@ -254,6 +255,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param registration - Registration LwM2M Client
      */
     public void updatedReg(Registration registration) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/updatedReg");
         executor.submit(() -> {
             LwM2mClient lwM2MClient = clientContext.getClientByEndpoint(registration.getEndpoint());
             try {
@@ -279,10 +281,12 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param observations - !!! Warn: if have not finishing unReg, then this operation will be finished on next Client`s connect
      */
     public void unReg(Registration registration, Collection<Observation> observations) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/unReg");
         executor.submit(() -> doUnReg(registration, clientContext.getClientByEndpoint(registration.getEndpoint())));
     }
 
     private void doUnReg(Registration registration, LwM2mClient client) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/doUnReg");
         try {
             logService.log(client, LOG_LWM2M_INFO + ": Client unRegistration");
             clientContext.unregister(client, registration);
@@ -304,6 +308,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onSleepingDev(Registration registration) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onSleepingDev");
         log.debug("[{}] [{}] Received endpoint sleeping event", registration.getId(), registration.getEndpoint());
         clientContext.asleep(clientContext.getClientByEndpoint(registration.getEndpoint()));
     }
@@ -317,7 +322,9 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      */
     @Override
     public void onUpdateValueAfterReadResponse(Registration registration, String path, ReadResponse response) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onUpdateValueAfterReadResponse");
         LwM2mNode content = response.getContent();
+        log.info(content.toString());
         if (content != null) {
             LwM2mClient lwM2MClient = clientContext.getClientByEndpoint(registration.getEndpoint());
             ObjectModel objectModelVersion = lwM2MClient.getObjectModel(path, modelProvider);
@@ -340,6 +347,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     public void onUpdateValueAfterReadCompositeResponse(Registration registration, ReadCompositeResponse response) {
         log.trace("ReadCompositeResponse: [{}]", response);
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onUpdateValueAfterReadCompositeResponse");
         if (response.getContent() != null) {
             LwM2mClient lwM2MClient = clientContext.getClientByEndpoint(registration.getEndpoint());
             response.getContent().forEach((k, v) -> {
@@ -367,6 +375,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      */
     @Override
     public void onUpdateValueWithSendRequest(Registration registration, SendRequest sendRequest) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onUpdateValueWithSendRequest");
         for(var entry : sendRequest.getNodes().entrySet()) {
             LwM2mPath path = entry.getKey();
             LwM2mNode node = entry.getValue();
@@ -395,6 +404,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      */
     @Override
     public void onDeviceProfileUpdate(SessionInfoProto sessionInfo, DeviceProfile deviceProfile) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onDeviceProfileUpdate");
         try {
             List<LwM2mClient> clients = clientContext.getLwM2mClients()
                     .stream().filter(e -> e.getProfileId() != null)
@@ -414,6 +424,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onDeviceUpdate(SessionInfoProto sessionInfo, Device device, Optional<DeviceProfile> newDeviceProfileOpt) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onDeviceUpdate");
         try {
             LwM2mClient client = clientContext.getClientByDeviceId(device.getUuidId());
             if (client != null) {
@@ -429,11 +440,13 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onDeviceDelete(DeviceId deviceId) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onDeviceDelete");
         clearAndUnregister(clientContext.getClientByDeviceId(deviceId.getId()));
     }
 
     @Override
     public void onResourceUpdate(TransportProtos.ResourceUpdateMsg resourceUpdateMsgOpt) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onResourceUpdate");
         String idVer = resourceUpdateMsgOpt.getResourceKey();
         TenantId tenantId = TenantId.fromUUID(new UUID(resourceUpdateMsgOpt.getTenantIdMSB(), resourceUpdateMsgOpt.getTenantIdLSB()));
         modelProvider.evict(tenantId, idVer);
@@ -442,6 +455,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onResourceDelete(TransportProtos.ResourceDeleteMsg resourceDeleteMsgOpt) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onResourceDelete");
         String pathIdVer = resourceDeleteMsgOpt.getResourceKey();
         TenantId tenantId = TenantId.fromUUID(new UUID(resourceDeleteMsgOpt.getTenantIdMSB(), resourceDeleteMsgOpt.getTenantIdLSB()));
         modelProvider.evict(tenantId, pathIdVer);
@@ -456,6 +470,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      */
     @Override
     public void onAwakeDev(Registration registration) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onAwakeDev");
         log.debug("[{}] [{}] Received endpoint awake event", registration.getId(), registration.getEndpoint());
         clientContext.awake(clientContext.getClientByEndpoint(registration.getEndpoint()));
     }
@@ -470,6 +485,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param lwM2MClient - object with All parameters off client
      */
     private void initClientTelemetry(LwM2mClient lwM2MClient) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/initClientTelemetry");
         Lwm2mDeviceProfileTransportConfiguration profile = clientContext.getProfile(lwM2MClient.getProfileId());
         Set<String> supportedObjects = clientContext.getSupportedIdVerInClient(lwM2MClient);
         if (supportedObjects != null && supportedObjects.size() > 0) {
@@ -482,11 +498,16 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void sendReadRequests(LwM2mClient lwM2MClient, Lwm2mDeviceProfileTransportConfiguration profile, Set<String> supportedObjects) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendReadRequests");
         try {
             Set<String> targetIds = new HashSet<>(profile.getObserveAttr().getAttribute());
             targetIds.addAll(profile.getObserveAttr().getTelemetry());
             targetIds = diffSets(profile.getObserveAttr().getObserve(), targetIds);
             targetIds = targetIds.stream().filter(target -> isSupportedTargetId(supportedObjects, target)).collect(Collectors.toSet());
+            log.info("Taget ID after check");
+            for (String s : targetIds) {
+                log.info(s);
+            }
 
             CountDownLatch latch = new CountDownLatch(targetIds.size());
             targetIds.forEach(versionedId -> sendReadRequest(lwM2MClient, versionedId,
@@ -501,8 +522,12 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void sendObserveRequests(LwM2mClient lwM2MClient, Lwm2mDeviceProfileTransportConfiguration profile, Set<String> supportedObjects) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendObserveRequests");
         try {
             Set<String> targetIds = profile.getObserveAttr().getObserve();
+            for (String s : targetIds) {
+                log.info(s);
+            }
             targetIds = targetIds.stream().filter(target -> isSupportedTargetId(supportedObjects, target)).collect(Collectors.toSet());
 
             CountDownLatch latch = new CountDownLatch(targetIds.size());
@@ -519,6 +544,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void sendWriteAttributeRequests(LwM2mClient lwM2MClient, Lwm2mDeviceProfileTransportConfiguration profile, Set<String> supportedObjects) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendWriteAttributeRequests");
         try {
             Map<String, ObjectAttributes> attributesMap = profile.getObserveAttr().getAttributeLwm2m();
             attributesMap = attributesMap.entrySet().stream().filter(target -> isSupportedTargetId(supportedObjects, target.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -530,34 +556,41 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void sendReadRequest(LwM2mClient lwM2MClient, String versionedId) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendReadRequest");
         sendReadRequest(lwM2MClient, versionedId, new TbLwM2MReadCallback(this, logService, lwM2MClient, versionedId));
     }
 
     private void sendReadRequest(LwM2mClient lwM2MClient, String versionedId, DownlinkRequestCallback<ReadRequest, ReadResponse> callback) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendReadRequest");
         TbLwM2MReadRequest request = TbLwM2MReadRequest.builder().versionedId(versionedId).timeout(clientContext.getRequestTimeout(lwM2MClient)).build();
         defaultLwM2MDownlinkMsgHandler.sendReadRequest(lwM2MClient, request, callback);
     }
 
     private void sendObserveRequest(LwM2mClient lwM2MClient, String versionedId) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendObserveRequest");
         sendObserveRequest(lwM2MClient, versionedId, new TbLwM2MObserveCallback(this, logService, lwM2MClient, versionedId));
     }
 
     private void sendObserveRequest(LwM2mClient lwM2MClient, String versionedId, DownlinkRequestCallback<ObserveRequest, ObserveResponse> callback) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendObserveRequest");
         TbLwM2MObserveRequest request = TbLwM2MObserveRequest.builder().versionedId(versionedId).timeout(clientContext.getRequestTimeout(lwM2MClient)).build();
         defaultLwM2MDownlinkMsgHandler.sendObserveRequest(lwM2MClient, request, callback);
     }
 
     private void sendWriteAttributesRequest(LwM2mClient lwM2MClient, String targetId, ObjectAttributes params) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendWriteAttributesRequest");
         TbLwM2MWriteAttributesRequest request = TbLwM2MWriteAttributesRequest.builder().versionedId(targetId).attributes(params).timeout(clientContext.getRequestTimeout(lwM2MClient)).build();
         defaultLwM2MDownlinkMsgHandler.sendWriteAttributesRequest(lwM2MClient, request, new TbLwM2MWriteAttributesCallback(logService, lwM2MClient, targetId));
     }
 
     private void sendCancelObserveRequest(String versionedId, LwM2mClient client) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/sendCancelObserveRequest");
         TbLwM2MCancelObserveRequest request = TbLwM2MCancelObserveRequest.builder().versionedId(versionedId).timeout(clientContext.getRequestTimeout(client)).build();
         defaultLwM2MDownlinkMsgHandler.sendCancelObserveRequest(client, request, new TbLwM2MCancelObserveCallback(logService, client, versionedId));
     }
 
     private void updateObjectResourceValue(LwM2mClient client, LwM2mObject lwM2mObject, String pathIdVer, int code) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/updateObjectResourceValue");
         LwM2mPath pathIds = new LwM2mPath(fromVersionedIdToObjectId(pathIdVer));
         lwM2mObject.getInstances().forEach((instanceId, instance) -> {
             String pathInstance = pathIds.toString() + "/" + instanceId;
@@ -566,6 +599,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void updateObjectInstanceResourceValue(LwM2mClient client, LwM2mObjectInstance lwM2mObjectInstance, String pathIdVer, int code) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/updateObjectInstanceResourceValue");
         LwM2mPath pathIds = new LwM2mPath(fromVersionedIdToObjectId(pathIdVer));
         lwM2mObjectInstance.getResources().forEach((resourceId, resource) -> {
             String pathRez = pathIds.toString() + "/" + resourceId;
@@ -585,6 +619,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param mode          - Replace, Update
      */
     private void updateResourcesValue(LwM2mClient lwM2MClient, LwM2mResource lwM2mResource, String path, Mode mode, int code) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/updateResourcesValue");
         Registration registration = lwM2MClient.getRegistration();
         if (lwM2MClient.saveResourceValue(path, lwM2mResource, modelProvider, mode)) {
             if (path.equals(convertObjectIdToVersionedId(FW_NAME_ID, registration))) {
@@ -629,6 +664,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param registration - Registration LwM2M Client
      */
     private void updateAttrTelemetry(Registration registration, Set<String> paths) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/updateAttrTelemetry");
         try {
             ResultsAddKeyValueProto results = this.getParametersFromProfile(registration, paths);
             SessionInfoProto sessionInfo = this.getSessionInfoOrCloseSession(registration);
@@ -646,21 +682,33 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private boolean isSupportedTargetId(Set<String> supportedIds, String targetId) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/isSupportedTargetId");
+        log.info("Support ID");
+        for (String s : supportedIds) {
+            log.info(s);
+        }
+        log.info("Target ID");
+        log.info(targetId);
+
         String[] targetIdParts = targetId.split(LWM2M_SEPARATOR_PATH);
         if (targetIdParts.length <= 1) {
             return false;
         }
+
         String targetIdSearch = targetIdParts[0];
         for (int i = 1; i < targetIdParts.length; i++) {
             targetIdSearch += "/" + targetIdParts[i];
             if (supportedIds.contains(targetIdSearch)) {
+                log.info(targetIdSearch);
                 return true;
             }
         }
+
         return false;
     }
 
     private ConcurrentHashMap<String, Object> getPathForWriteAttributes(JsonObject objectJson) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getPathForWriteAttributes");
         ConcurrentHashMap<String, Object> pathAttributes = new Gson().fromJson(objectJson.toString(),
                 new TypeToken<ConcurrentHashMap<String, Object>>() {
                 }.getType());
@@ -668,6 +716,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void onDeviceUpdate(LwM2mClient lwM2MClient, Device device, Optional<DeviceProfile> deviceProfileOpt) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onDeviceUpdate");
         var oldProfile = clientContext.getProfile(lwM2MClient.getProfileId());
         deviceProfileOpt.ifPresent(deviceProfile -> this.onDeviceProfileUpdate(Collections.singletonList(lwM2MClient), oldProfile, deviceProfile));
         lwM2MClient.onDeviceUpdate(device, deviceProfileOpt);
@@ -681,6 +730,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param path         -
      */
     private ResultsAddKeyValueProto getParametersFromProfile(Registration registration, Set<String> path) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getParametersFromProfile");
         if (path != null && path.size() > 0) {
             ResultsAddKeyValueProto results = new ResultsAddKeyValueProto();
             var profile = clientContext.getProfile(registration);
@@ -714,6 +764,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private TransportProtos.KeyValueProto getKvToThingsBoard(String pathIdVer, Registration registration) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getKvToThingsBoard");
         LwM2mClient lwM2MClient = this.clientContext.getClientByEndpoint(registration.getEndpoint());
         Map<String, String> names = clientContext.getProfile(lwM2MClient.getProfileId()).getObserveAttr().getKeyName();
         if (names != null && names.containsKey(pathIdVer)) {
@@ -758,6 +809,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onWriteResponseOk(LwM2mClient client, String path, WriteRequest request, int code) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onWriteResponseOk");
         if (request.getNode() instanceof LwM2mResource) {
             this.updateResourcesValue(client, ((LwM2mResource) request.getNode()), path, request.isReplaceRequest() ? Mode.REPLACE : Mode.UPDATE, code);
         } else if (request.getNode() instanceof LwM2mObjectInstance) {
@@ -772,6 +824,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onCreateResponseOk(LwM2mClient client, String path, CreateRequest request) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onCreateResponseOk");
         if (request.getObjectInstances() != null && request.getObjectInstances().size() > 0) {
             request.getObjectInstances().forEach(instance ->
                     instance.getResources()
@@ -782,6 +835,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     @Override
     public void onWriteCompositeResponseOk(LwM2mClient client, WriteCompositeRequest request, int code) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onWriteCompositeResponseOk");
         log.trace("ReadCompositeResponse: [{}]", request.getNodes());
         request.getNodes().forEach((k, v) -> {
             if (v instanceof LwM2mSingleResource) {
@@ -796,6 +850,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
 
     //TODO: review and optimize the logic to minimize number of the requests to device.
     private void onDeviceProfileUpdate(List<LwM2mClient> clients, Lwm2mDeviceProfileTransportConfiguration oldProfile, DeviceProfile deviceProfile) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onDeviceProfileUpdate");
         if (clientContext.profileUpdate(deviceProfile) != null) {
             TelemetryMappingConfiguration oldTelemetryParams = oldProfile.getObserveAttr();
             Set<String> attributeSetOld = oldTelemetryParams.getAttribute();
@@ -871,6 +926,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private ParametersAnalyzeResult getAnalyzerKeyName(Map<String, String> keyNameOld, Map<String, String> keyNameNew) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getAnalyzerKeyName");
         ParametersAnalyzeResult analyzerParameters = new ParametersAnalyzeResult();
         Set<String> paths = keyNameNew.entrySet()
                 .stream()
@@ -881,6 +937,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private ParametersAnalyzeResult getAttributesAnalyzer(Map<String, ObjectAttributes> attributeLwm2mOld, Map<String, ObjectAttributes> attributeLwm2mNew) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getAttributesAnalyzer");
         ParametersAnalyzeResult analyzerParameters = new ParametersAnalyzeResult();
         Set<String> pathOld = attributeLwm2mOld.keySet();
         Set<String> pathNew = attributeLwm2mNew.keySet();
@@ -897,7 +954,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void compareAndSetWriteAttributes(LwM2mClient client, ParametersAnalyzeResult analyzerParameters, Map<String, ObjectAttributes> lwm2mAttributesNew, LwM2MModelConfig modelConfig) {
-
+        log.info("TB in DefaultLwM2MUplinkMesHandler/compareAndSetWriteAttributes");
     }
 
     /**
@@ -907,6 +964,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     @Override
     public void onToTransportUpdateCredentials(SessionInfoProto sessionInfo, TransportProtos.ToTransportUpdateCredentialsProto updateCredentials) {
         log.info("[{}] updateCredentials", sessionInfo);
+        log.info("TB in DefaultLwM2MUplinkMesHandler/onToTransportUpdateCredentials");
         clearAndUnregister(clientContext.getClientBySessionInfo(sessionInfo));
     }
 
@@ -915,6 +973,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @return SessionInfoProto -
      */
     private SessionInfoProto getSessionInfo(LwM2mClient lwM2MClient) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getSessionInfo");
         if (lwM2MClient != null && lwM2MClient.getSession() != null) {
             return lwM2MClient.getSession();
         }
@@ -926,6 +985,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @return - sessionInfo after access connect client
      */
     public SessionInfoProto getSessionInfoOrCloseSession(Registration registration) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getSessionInfoOrCloseSession");
         return getSessionInfo(clientContext.getClientByEndpoint(registration.getEndpoint()));
     }
 
@@ -935,6 +995,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param sessionInfo -
      */
     private void reportActivityAndRegister(SessionInfoProto sessionInfo) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/reportActivityAndRegister");
         if (sessionInfo != null && !transportService.hasSession(sessionInfo)) {
             sessionManager.register(sessionInfo);
             this.reportActivitySubscription(sessionInfo);
@@ -942,6 +1003,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void reportActivity() {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/reportActivity");
         clientContext.getLwM2mClients().forEach(client -> reportActivityAndRegister(client.getSession()));
     }
 
@@ -956,6 +1018,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
      * @param lwM2MClient - LwM2M Client
      */
     public void initAttributes(LwM2mClient lwM2MClient, boolean logFailedUpdateOfNonChangedValue) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/initAttributes");
         Map<String, String> keyNamesMap = this.getNamesFromProfileForSharedAttributes(lwM2MClient);
         if (!keyNamesMap.isEmpty()) {
             Set<String> keysToFetch = new HashSet<>(keyNamesMap.values());
@@ -969,15 +1032,19 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private Map<String, String> getNamesFromProfileForSharedAttributes(LwM2mClient lwM2MClient) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getNamesFromProfileForSharedAttributes");
         Lwm2mDeviceProfileTransportConfiguration profile = clientContext.getProfile(lwM2MClient.getProfileId());
         return profile.getObserveAttr().getKeyName();
     }
 
     public LwM2MTransportServerConfig getConfig() {
+
+        log.info("TB in DefaultLwM2MUplinkMesHandler/getConfig");
         return this.config;
     }
 
     private void reportActivitySubscription(SessionInfoProto sessionInfo) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/reportActivitySubscription");
         transportService.process(sessionInfo, TransportProtos.SubscriptionInfoProto.newBuilder()
                 .setAttributeSubscription(true)
                 .setRpcSubscription(true)
@@ -986,6 +1053,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void clearAndUnregister(LwM2mClient client) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/clearAndUnregister");
         client.lock();
         try {
             Registration registration = client.getRegistration();
@@ -998,6 +1066,7 @@ public class DefaultLwM2mUplinkMsgHandler extends LwM2MExecutorAwareService impl
     }
 
     private void tryAwake(LwM2mClient lwM2MClient) {
+        log.info("TB in DefaultLwM2MUplinkMesHandler/tryAwake");
         if (clientContext.awake(lwM2MClient)) {
             // clientContext.awake calls clientContext.update
             log.debug("[{}] Device is awake", lwM2MClient.getEndpoint());

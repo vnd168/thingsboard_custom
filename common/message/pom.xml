@@ -84,6 +84,11 @@
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.thingsboard.common</groupId>
+            <artifactId>message</artifactId>
+            <version>3.4.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
