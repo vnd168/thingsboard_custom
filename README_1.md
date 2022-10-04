@@ -10,11 +10,8 @@ Before continue to installation execute the following commands in order to insta
 
 ```
 # Install wget
-
 sudo yum install -y nano wget
-
 # Add latest EPEL release for CentOS 7
-
 sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
 ```
@@ -23,11 +20,8 @@ sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.
 
 ```
 # Install wget
-
 sudo yum install -y nano wget
-
 # Add latest EPEL release for CentOS 7
-
 sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 
 ```
@@ -92,14 +86,32 @@ In terminal tab in IntelliJ, run command
 
 Running development environment
 
-<img src="https://drive.google.com/file/d/1rEFNpgk8LrJ_z-KndHzTPKHTS9PckeeC/view?usp=sharing">
+<img src="![image]([https://user-images.githubusercontent.com/70082374/193747694-907131c0-943c-4d7b-adcf-bb412357e989.png](https://upload-images.jianshu.io/upload_images/8210963-fe411e08c4fb2c26.png?imageMogr2/auto-orient/strip|imageView2/2/w/1148/format/webp))">
 
 In directory *\thingsboard\application\src\java\org\thingsboard\server*
 
-Run `ThingsboardInstallApplication`
+Configure Environment varibles in application `ThingsboardInstallApplication` 
 
-Run `ThingsboardServerApplication`
+```
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/your_thingsboard_database_name
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=1
+install.load_demo=true
+install.data_dir=thingsboard\application\target\data
+```
 
-Server Thingsboard is in `http://localhost:8080`
+Configure Environment varibles in application `ThingsboardServerApplication`
+
+```
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/your_thingsboard_database_name
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=1
+```
+Run application `ThingsboardServerApplication`
+ 
+Navigate to http://localhost:4200/ or http://localhost:8080/ and login into ThingsBoard using demo data credentials:
+
+- user: tenant@thingsboard.org
+- password: tenant
 
 Any configuration (i.e server port, username/password database) can be change in *thingsboard\application\src\java\org\thingsboard\server\thingsboard.yml*
