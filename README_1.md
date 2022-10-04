@@ -57,7 +57,7 @@ Then, press “Ctrl+D” to return to main user console and connect to the datab
 
 `psql -U postgres -d postgres -h 127.0.0.1 -W`
 
-`CREATE DATABASE thingsboard;`
+`CREATE DATABASE your_thingsboard_database_name;`
 
 `\q`
 
@@ -81,7 +81,9 @@ In terminal tab in IntelliJ, run command
 
 ## Step 4
 
-Run Thingsboard Server
+Running development environment
+
+<img src="link_anh_cua_ban">
 
 In directory *\thingsboard\application\src\java\org\thingsboard\server*
 
