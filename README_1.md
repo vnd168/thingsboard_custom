@@ -4,36 +4,45 @@
 
 ## Prerequisite
 
-### Update library 
-a. For CentOS 7
+Before continue to installation execute the following commands in order to install necessary tools:
 
-Install `wget` with command:
+### For CentOS 7
 
-`sudo yum install -y nano wget`
+```
+# Install wget
 
-Add latest EPEL release for CentOS 7:
+sudo yum install -y nano wget
 
-`sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest--7.noarch.rpm`
+# Add latest EPEL release for CentOS 7
 
-b. For CentOS 8
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-Install `wget` with command:
+```
 
-`sudo yum install -y nano wget`
+### For CentOS 8
 
-Add latest EPEL release for CentOS 8:
+```
+# Install wget
 
-`sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm`
+sudo yum install -y nano wget
+
+# Add latest EPEL release for CentOS 7
+
+sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+```
+
 
 ### Intstall Java
 
-Install java package with command:
+ThingsBoard service is running on Java 11. Follow this instructions to install OpenJDK 11:
 
 `sudo yum install java-11-openjdk`
 
-or
+Configure your operating system to use OpenJDK 11 by default. You can configure which version is the default using the following command:
 
-`sudo yum install java-11-openjdk-devel`
+`sudo update-alternatives --config java`
+
 
 ### Firewall
 
@@ -83,7 +92,7 @@ In terminal tab in IntelliJ, run command
 
 Running development environment
 
-<img src="link_anh_cua_ban">
+<img src="https://drive.google.com/file/d/1rEFNpgk8LrJ_z-KndHzTPKHTS9PckeeC/view?usp=sharing">
 
 In directory *\thingsboard\application\src\java\org\thingsboard\server*
 
