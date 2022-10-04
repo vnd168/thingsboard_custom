@@ -86,11 +86,10 @@ In terminal tab in IntelliJ, run command
 
 Running development environment
 
-<img src="![image]([https://user-images.githubusercontent.com/70082374/193747694-907131c0-943c-4d7b-adcf-bb412357e989.png](https://upload-images.jianshu.io/upload_images/8210963-fe411e08c4fb2c26.png?imageMogr2/auto-orient/strip|imageView2/2/w/1148/format/webp))">
-
 In directory *\thingsboard\application\src\java\org\thingsboard\server*
 
 Configure Environment varibles in application `ThingsboardInstallApplication` 
+
 
 ```
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/your_thingsboard_database_name
@@ -99,6 +98,7 @@ SPRING_DATASOURCE_PASSWORD=1
 install.load_demo=true
 install.data_dir=thingsboard\application\target\data
 ```
+![image](https://user-images.githubusercontent.com/70082374/193747984-db3a020f-3b10-4e1f-867b-a579082c07e8.png)
 
 Configure Environment varibles in application `ThingsboardServerApplication`
 
@@ -107,6 +107,9 @@ SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/your_thingsboard_database
 SPRING_DATASOURCE_USERNAME=postgres
 SPRING_DATASOURCE_PASSWORD=1
 ```
+![image](https://user-images.githubusercontent.com/70082374/193748364-6bb8f646-dda7-4c55-a593-f86d765e7f24.png)
+
+
 Run application `ThingsboardServerApplication`
  
 Navigate to http://localhost:4200/ or http://localhost:8080/ and login into ThingsBoard using demo data credentials:
