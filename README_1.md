@@ -169,7 +169,7 @@ In terminal tab in IntelliJ, run command
 
 #### Create Database schema and populate demo data
 
-In directory **\thingsboard\application\src\java\org\thingsboard\server*
+In directory **\thingsboard\application\src\java\org\thingsboard\server**
 
 In order to create the database tables, run the following:
 
@@ -225,4 +225,4 @@ Navigate to http://localhost:4200/ or http://localhost:8080/ and login into Thin
 - user: tenant@thingsboard.org
 - password: tenant
 
-Any configuration (i.e server port, username/password database) can be change in *thingsboard\application\src\java\org\thingsboard\server\thingsboard.yml*
+Any configuration (i.e server port, username/password database) can be change in **thingsboard\application\src\java\org\thingsboard\server\thingsboard.yml**
