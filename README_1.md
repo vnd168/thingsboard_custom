@@ -196,7 +196,29 @@ SPRING_DATASOURCE_PASSWORD=1
 ```
 ![image](https://user-images.githubusercontent.com/70082374/193748364-6bb8f646-dda7-4c55-a593-f86d765e7f24.png)
 
-Run application `ThingsboardServerApplication`
+##### Running UI container in hot redeploy mode
+
+By default, ThingsBoard UI is served at 8080 port. However, you may want to run UI in the hot redeploy mode.
+
+**NOTE :** This step is optional. It is required only if you are going to do changes to UI.
+``
+cd ${TB_WORK_DIR}/ui-ngx
+mvn clean install -P yarn-start
+``
+This will launch a special server that will listen on 4200 port. All REST API and websocket requests will be forwarded to 8080 port.
+
+##### Running server-side container
+
+To start server-side container you can use couple options.
+
+As a first option, you can run the main method of org.thingsboard.server.ThingsboardServerApplication class that is located in application module from your IDE.
+
+As a second option, you can start the server from command line as a regular Spring boot application:
+
+``
+cd ${TB_WORK_DIR}
+java -jar application/target/thingsboard-${VERSION}-boot.jar
+``
  
 Navigate to http://localhost:4200/ or http://localhost:8080/ and login into ThingsBoard using demo data credentials:
 
