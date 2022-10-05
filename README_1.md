@@ -144,30 +144,29 @@ Execute create database statement
 CREATE DATABASE your_thingsboard_database_name;
 \q
 ```
-## Install Thingsboard
+## Setup environment in Intellij
 
 
-### Step 1
+### Clone thingsboard's repository 
 
-Clone thingsboard's repository 
+Get thingsboard code from [Thingsboard Github](https://github.com/thingsboard/thingsboard) or run this command:
 
 `git clone https://github.com/thingsboard/thingsboard.git`
 
-### Step 2
+### Open Thingsboard in IntelliJ
 
-Open Thingsboard in IntelliJ
+Open Thingsboard Project at server over Remote Development (SSH) in IntelliJ
 
-### Step 3
-
-Build Thingsboard Project
+### Get dependencies and build Thingsboard Project
 
 In terminal tab in IntelliJ, run command
 
-`mvn clean install -DskipTest`
+```
+cd home/user/thingsboard
+mvn clean install -DskipTest
+```
 
-### Step 4
-
-#### Create Database schema and populate demo data
+### Load Thingsboard schemas to Database
 
 In directory **\thingsboard\application\src\java\org\thingsboard\server**
 
@@ -179,13 +178,13 @@ SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/your_thingsboard_database
 SPRING_DATASOURCE_USERNAME=postgres
 SPRING_DATASOURCE_PASSWORD=1
 install.load_demo=true
-install.data_dir=home/user/thingsboard/application/target/data
+install.data_dir=home/user/thingsboard/application/target/data # Location of initialized data
 ```
 ![image](https://user-images.githubusercontent.com/70082374/193747984-db3a020f-3b10-4e1f-867b-a579082c07e8.png)
 
 Run application `ThingsboardInstallApplication`
 
-#### Running development environment
+### Connect database to Thingsboard server
 
 Configure Environment varibles in application `ThingsboardServerApplication`
 
@@ -196,33 +195,46 @@ SPRING_DATASOURCE_PASSWORD=1
 ```
 ![image](https://user-images.githubusercontent.com/70082374/193748364-6bb8f646-dda7-4c55-a593-f86d765e7f24.png)
 
-##### Running UI container in hot redeploy mode
+### Running server-side container
 
-By default, ThingsBoard UI is served at 8080 port. However, you may want to run UI in the hot redeploy mode.
+There are multiple ways to start server-side container service at port 8080:
 
-**NOTE :** This step is optional. It is required only if you are going to do changes to UI.
-``
-cd ${TB_WORK_DIR}/ui-ngx
-mvn clean install -P yarn-start
-``
-This will launch a special server that will listen on 4200 port. All REST API and websocket requests will be forwarded to 8080 port.
+- First option: you can run the main method of org.thingsboard.server.ThingsboardServerApplication class that is located in application module from your IDE.
 
-##### Running server-side container
-
-To start server-side container you can use couple options.
-
-As a first option, you can run the main method of org.thingsboard.server.ThingsboardServerApplication class that is located in application module from your IDE.
-
-As a second option, you can start the server from command line as a regular Spring boot application:
+- Second option: you can start the server from command line as a regular Spring boot application:
 
 ``
-cd ${TB_WORK_DIR}
+cd home/user/thingsboard
 java -jar application/target/thingsboard-${VERSION}-boot.jar
 ``
- 
+
+### Running UI container in hot redeploy mode
+
+Normally, port 8080 is the main application port.
+
+However, there is hot redeploy mode which can be used to change frontend code without the need to restart backend.
+
+To start UI in hot redeploy mode (at port 4200), run these commands:
+
+``
+cd home/user/thingsboard/ui-ngx
+mvn clean install -P yarn-start
+``
+
+**NOTE :** This step is optional. It is required only if you are going to do changes to UI.
+
+This will launch a special server that will listen on 4200 port. All REST API and websocket requests will be forwarded to 8080 port.
+
+### Login Thingsboard
+
 Navigate to http://localhost:4200/ or http://localhost:8080/ and login into ThingsBoard using demo data credentials:
 
 - user: tenant@thingsboard.org
 - password: tenant
 
-Any configuration (i.e server port, username/password database) can be change in **thingsboard\application\src\java\org\thingsboard\server\thingsboard.yml**
+**NOTE :**  Any configuration (i.e server port, username/password database) can be change in **thingsboard\application\src\java\org\thingsboard\server\thingsboard.yml**
+
+- References:
+	- [Source](https://thingsboard.io/docs/user-guide/install/rhel/)
+	- [Source1](https://thingsboard.io/docs/user-guide/contribution/how-to-contribute/)
+	- [Source2](https://www.jianshu.com/p/7ad9d265b953)
