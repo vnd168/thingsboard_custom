@@ -14,22 +14,14 @@
 /// limitations under the License.
 ///
 
-import {
-  AfterViewInit,
-  Component,
-  ComponentFactoryResolver,
-  Inject,
-  Injector,
-  SkipSelf,
-  ViewChild
-} from '@angular/core';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Store } from '@ngrx/store';
-import { AppState } from '@core/core.state';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DialogComponent } from '@shared/components/dialog.component';
-import { Router } from '@angular/router';
+import {AfterViewInit, Component, ComponentFactoryResolver, Inject, Injector, SkipSelf, ViewChild} from '@angular/core';
+import {ErrorStateMatcher} from '@angular/material/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Store} from '@ngrx/store';
+import {AppState} from '@core/core.state';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {DialogComponent} from '@shared/components/dialog.component';
+import {Router} from '@angular/router';
 import {
   createDeviceProfileConfiguration,
   createDeviceProfileTransportConfiguration,
@@ -42,14 +34,14 @@ import {
   deviceTransportTypeHintMap,
   deviceTransportTypeTranslationMap
 } from '@shared/models/device.models';
-import { DeviceProfileService } from '@core/http/device-profile.service';
-import { EntityType } from '@shared/models/entity-type.models';
-import { MatHorizontalStepper } from '@angular/material/stepper';
-import { RuleChainId } from '@shared/models/id/rule-chain-id';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { deepTrim } from '@core/utils';
-import { ServiceType } from '@shared/models/queue.models';
-import { DashboardId } from '@shared/models/id/dashboard-id';
+import {DeviceProfileService} from '@core/http/device-profile.service';
+import {EntityType} from '@shared/models/entity-type.models';
+import {MatHorizontalStepper} from '@angular/material/stepper';
+import {RuleChainId} from '@shared/models/id/rule-chain-id';
+import {StepperSelectionEvent} from '@angular/cdk/stepper';
+import {deepTrim} from '@core/utils';
+import {ServiceType} from '@shared/models/queue.models';
+import {DashboardId} from '@shared/models/id/dashboard-id';
 
 export interface AddDeviceProfileDialogData {
   deviceProfileName: string;
@@ -179,22 +171,27 @@ export class AddDeviceProfileDialogComponent extends
   }
 
   add(): void {
+    console.log(this.allValid())
     if (this.allValid()) {
       const deviceProvisionConfiguration: DeviceProvisionConfiguration = this.provisionConfigFormGroup.get('provisionConfiguration').value;
       const provisionDeviceKey = deviceProvisionConfiguration.provisionDeviceKey;
       delete deviceProvisionConfiguration.provisionDeviceKey;
+      console.log(this.transportConfigFormGroup.get('transportType').value);
+      console.log(typeof(this.transportConfigFormGroup.get('transportType').value))
       const deviceProfile: DeviceProfile = {
         name: this.deviceProfileDetailsFormGroup.get('name').value,
         type: this.deviceProfileDetailsFormGroup.get('type').value,
         image: this.deviceProfileDetailsFormGroup.get('image').value,
         defaultQueueName: this.deviceProfileDetailsFormGroup.get('defaultQueueName').value,
-        transportType: this.transportConfigFormGroup.get('transportType').value,
+        //transportType: this.transportConfigFormGroup.get('transportType').value,
+        transportType: DeviceTransportType.DEFAULT,
         provisionType: deviceProvisionConfiguration.type,
         provisionDeviceKey,
         description: this.deviceProfileDetailsFormGroup.get('description').value,
         profileData: {
           configuration: createDeviceProfileConfiguration(DeviceProfileType.DEFAULT),
-          transportConfiguration: this.transportConfigFormGroup.get('transportConfiguration').value,
+          //transportConfiguration: this.transportConfigFormGroup.get('transportConfiguration').value,
+          transportConfiguration: {type: DeviceTransportType.DEFAULT},
           alarms: this.alarmRulesFormGroup.get('alarms').value,
           provisionConfiguration: deviceProvisionConfiguration
         }

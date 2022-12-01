@@ -46,12 +46,15 @@ export enum DeviceTransportType {
   MQTT = 'MQTT',
   COAP = 'COAP',
   LWM2M = 'LWM2M',
-  SNMP = 'SNMP'
+  SNMP = 'SNMP',
+  TCP = 'TCP',
+  UDP = 'UDP'
 }
 
 export enum TransportPayloadType {
   JSON = 'JSON',
-  PROTOBUF = 'PROTOBUF'
+  PROTOBUF = 'PROTOBUF',
+  RAW = 'RAW'
 }
 
 export enum CoapTransportDeviceType {
@@ -101,7 +104,9 @@ export const deviceTransportTypeTranslationMap = new Map<DeviceTransportType, st
     [DeviceTransportType.MQTT, 'device-profile.transport-type-mqtt'],
     [DeviceTransportType.COAP, 'device-profile.transport-type-coap'],
     [DeviceTransportType.LWM2M, 'device-profile.transport-type-lwm2m'],
-    [DeviceTransportType.SNMP, 'device-profile.transport-type-snmp']
+    [DeviceTransportType.SNMP, 'device-profile.transport-type-snmp'],
+    [DeviceTransportType.TCP, 'device-profile.transport-type-tcp'],
+    [DeviceTransportType.UDP, 'device-profile.transport-type-udp']
   ]
 );
 
@@ -120,7 +125,9 @@ export const deviceTransportTypeHintMap = new Map<DeviceTransportType, string>(
     [DeviceTransportType.MQTT, 'device-profile.transport-type-mqtt-hint'],
     [DeviceTransportType.COAP, 'device-profile.transport-type-coap-hint'],
     [DeviceTransportType.LWM2M, 'device-profile.transport-type-lwm2m-hint'],
-    [DeviceTransportType.SNMP, 'device-profile.transport-type-snmp-hint']
+    [DeviceTransportType.SNMP, 'device-profile.transport-type-snmp-hint'],
+    [DeviceTransportType.TCP, 'device-profile.transport-type-tcp-hint'],
+    [DeviceTransportType.UDP, 'device-profile.transport-type-udp-hint']
   ]
 );
 
@@ -221,6 +228,20 @@ export const deviceTransportTypeConfigurationInfoMap = new Map<DeviceTransportTy
         hasProfileConfiguration: true,
         hasDeviceConfiguration: true
       }
+    ],
+    [
+      DeviceTransportType.TCP,
+      {
+        hasProfileConfiguration: false,
+        hasDeviceConfiguration: false,
+      }
+    ],
+    [
+      DeviceTransportType.UDP,
+      {
+        hasProfileConfiguration: false,
+        hasDeviceConfiguration: false,
+      }
     ]
   ]
 );
@@ -305,11 +326,21 @@ export interface SnmpMapping {
   dataType: DataType;
 }
 
+export interface TcpDeviceProfileTransportConfiguration {
+  [key: string]: any;
+}
+
+export interface UdpDeviceProfileTransportConfiguration {
+  [key: string]: any;
+}
+
 export type DeviceProfileTransportConfigurations = DefaultDeviceProfileTransportConfiguration &
                                                    MqttDeviceProfileTransportConfiguration &
                                                    CoapDeviceProfileTransportConfiguration &
                                                    Lwm2mDeviceProfileTransportConfiguration &
-                                                   SnmpDeviceProfileTransportConfiguration;
+                                                   SnmpDeviceProfileTransportConfiguration &
+                                                   TcpDeviceProfileTransportConfiguration &
+                                                   UdpDeviceProfileTransportConfiguration;
 
 export interface DeviceProfileTransportConfiguration extends DeviceProfileTransportConfigurations {
   type: DeviceTransportType;
@@ -396,6 +427,14 @@ export function createDeviceProfileTransportConfiguration(type: DeviceTransportT
         };
         transportConfiguration = {...snmpTransportConfiguration, type: DeviceTransportType.SNMP};
         break;
+      case DeviceTransportType.TCP:
+        const tcpTransportConfiguration: DefaultDeviceProfileTransportConfiguration = {};
+        transportConfiguration = {...tcpTransportConfiguration, type: DeviceTransportType.TCP};
+        break;
+      case DeviceTransportType.UDP:
+        const udpTransportConfiguration: DefaultDeviceProfileTransportConfiguration = {};
+        transportConfiguration = {...udpTransportConfiguration, type: DeviceTransportType.UDP};
+        break;
     }
   }
   return transportConfiguration;
@@ -433,6 +472,14 @@ export function createDeviceTransportConfiguration(type: DeviceTransportType): D
           community: 'public'
         };
         transportConfiguration = {...snmpTransportConfiguration, type: DeviceTransportType.SNMP};
+        break;
+      case DeviceTransportType.TCP:
+        const tcpTransportConfiguration: DefaultDeviceTransportConfiguration = {};
+        transportConfiguration = {...tcpTransportConfiguration, type: DeviceTransportType.TCP};
+        break;
+      case DeviceTransportType.UDP:
+        const udpTransportConfiguration: DefaultDeviceTransportConfiguration = {};
+        transportConfiguration = {...udpTransportConfiguration, type: DeviceTransportType.UDP};
         break;
     }
   }

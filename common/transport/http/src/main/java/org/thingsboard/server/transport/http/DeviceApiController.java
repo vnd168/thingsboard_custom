@@ -76,7 +76,7 @@ import java.util.function.Consumer;
  */
 @RestController
 @ConditionalOnExpression("'${service.type:null}'=='tb-transport' || ('${service.type:null}'=='monolith' && '${transport.api_enabled:true}'=='true' && '${transport.http.enabled}'=='true')")
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v2")
 @Slf4j
 public class DeviceApiController implements TbTransportService {
 
